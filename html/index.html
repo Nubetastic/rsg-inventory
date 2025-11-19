@@ -47,9 +47,9 @@
                 <div class="player-inventory" :class="{ 'centered-player-inventory': shouldCenterInventory }">
                     <div class="item-grid">
                         <div v-for="slot in totalSlots" :key="slot" class="item-slot" :data-slot="slot" :class="{ 'invalid-slot-highlight': errorSlot === slot }" @dblclick="getItemInSlot(slot, 'player') && useItem(getItemInSlot(slot, 'player'))" @mousedown="event => handleMouseDown(event, slot, 'player')">
-                            <div class="item-slot-key" v-if="slot <= 5">
+                            <!-- <div class="item-slot-key" v-if="slot <= 5">
                                 <p>{{ slot }}</p>
-                            </div>
+                            </div> -->
                             <div class="item-slot-img" v-if="getItemInSlot(slot, 'player')" @mouseenter="showItemInfo(getItemInSlot(slot, 'player'), $event)" @mouseleave="hideItemInfo()">
                                 <img :src="'images/' + getItemInSlot(slot, 'player').image" alt="" />
                             </div>
