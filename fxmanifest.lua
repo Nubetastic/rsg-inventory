@@ -24,6 +24,7 @@ client_scripts {
     'client/drops/ui/callbacks.lua',
     'client/main.lua',
     'client/drops/loops.lua',
+    'client/notify.lua',
 }
 
 server_scripts {
@@ -38,6 +39,7 @@ server_scripts {
     'server/shops/events/*.lua',
     'server/commands.lua',
     'server/versionchecker.lua',
+    'server/notify_wrapper.lua',
 }
 
 ui_page 'html/index.html'

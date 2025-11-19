@@ -28,12 +28,12 @@ CreateThread(function()
     -- Mapping of keys to commands and whether the key is disabled (hold vs press)
     local commands = {
         [config.Keybinds.Open]             = { command = "inventory", disabled = false }, -- open inventory
-        [config.Keybinds.Hotbar]           = { command = "hotbar",    disabled = false }, -- toggle hotbar
-        [RSGCore.Shared.Keybinds["1"]]     = { command = "slot_1",    disabled = true  }, -- use slot 1 (hold)
-        [RSGCore.Shared.Keybinds["2"]]     = { command = "slot_2",    disabled = true  }, -- use slot 2 (hold)
-        [RSGCore.Shared.Keybinds["3"]]     = { command = "slot_3",    disabled = true  }, -- use slot 3 (hold)
-        [RSGCore.Shared.Keybinds["4"]]     = { command = "slot_4",    disabled = true  }, -- use slot 4 (hold)
-        [RSGCore.Shared.Keybinds["5"]]     = { command = "slot_5",    disabled = true  }, -- use slot 5 (hold)
+        --[config.Keybinds.Hotbar]           = { command = "hotbar",    disabled = false }, -- toggle hotbar
+        --[RSGCore.Shared.Keybinds["1"]]     = { command = "slot_1",    disabled = true  }, -- use slot 1 (hold)
+        --[RSGCore.Shared.Keybinds["2"]]     = { command = "slot_2",    disabled = true  }, -- use slot 2 (hold)
+        --[RSGCore.Shared.Keybinds["3"]]     = { command = "slot_3",    disabled = true  }, -- use slot 3 (hold)
+        --[RSGCore.Shared.Keybinds["4"]]     = { command = "slot_4",    disabled = true  }, -- use slot 4 (hold)
+        --[RSGCore.Shared.Keybinds["5"]]     = { command = "slot_5",    disabled = true  }, -- use slot 5 (hold)
     }
 
     -- Main loop to check key inputs every frame
