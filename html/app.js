@@ -3,6 +3,12 @@ const InventoryContainer = Vue.createApp({
         return this.getInitialState();
     },
     computed: {
+        playerInventoryVisibleRows() {
+            if (!this.totalSlots || this.totalSlots <= 0) {
+                return 1;
+            }
+            return Math.max(1, Math.ceil(this.visiblePlayerSlots / this.playerInventoryColumns));
+        },
         playerWeight() {
             const weight = Object.values(this.playerInventory).reduce((total, item) => {
                 if (item && item.weight !== undefined && item.amount !== undefined) {
@@ -52,6 +58,12 @@ const InventoryContainer = Vue.createApp({
         transferAmount(newVal) {
             if (newVal !== null && newVal < 1) this.transferAmount = 1;
         },
+        playerInventory: {
+            handler() {
+                this.updateVisiblePlayerSlots();
+            },
+            deep: true,
+        },
     },
     methods: {
         getInitialState() {
@@ -59,6 +71,8 @@ const InventoryContainer = Vue.createApp({
 
                 maxWeight: 0,
                 totalSlots: 0,
+                visiblePlayerSlots: 0,
+                playerInventoryColumns: 5,
 
                 isInventoryOpen: false,
                 additionalCloseKey: 'KeyI',
@@ -157,6 +171,7 @@ const InventoryContainer = Vue.createApp({
                     weight: 'Weight',
                     id: 'ID',
                     cash: 'Cash',
+                    sort: 'Sort',
                     received: 'Received',
                     used: 'Used',
                     removed: 'Removed',
@@ -196,6 +211,8 @@ const InventoryContainer = Vue.createApp({
             this.isInventoryOpen = true;
             this.maxWeight = data.maxweight;
             this.totalSlots = data.slots;
+            this.visiblePlayerSlots = 0;
+            this.playerInventoryColumns = 5;
             this.playerId = data.playerId || null;
             this.playerName = data.playerName || null;
             this.playerInventory = {};
@@ -291,6 +308,8 @@ const InventoryContainer = Vue.createApp({
                     }
                 }
             }
+
+            this.updateVisiblePlayerSlots();
         },
         async closeInventory() {
             let inventoryName = this.otherInventoryName;
@@ -324,6 +343,24 @@ const InventoryContainer = Vue.createApp({
         },
         clearTransferAmount() {
             this.transferAmount = null;
+        },
+        async sortInventory() {
+            if (this.busy || this.isTradeActive) {
+                return;
+            }
+
+            this.busy = true;
+            this.showContextMenu = false;
+            this.hideItemInfo();
+            this.clearDragData();
+
+            try {
+                await axios.post("https://rsg-inventory/SortInventory", {});
+            } catch (error) {
+                console.error("Error sorting inventory:", error);
+            } finally {
+                this.busy = false;
+            }
         },
         getItemInSlot(slot, inventoryType) {
             if (inventoryType === "player") {
@@ -989,6 +1026,44 @@ const InventoryContainer = Vue.createApp({
                 }
             }
             this.showContextMenu = false;
+        },
+        updateVisiblePlayerSlots() {
+            if (!this.totalSlots || this.totalSlots <= 0) {
+                this.visiblePlayerSlots = 0;
+                return;
+            }
+
+            const usedSlots = Object.values(this.playerInventory).filter(Boolean).length;
+            const columns = this.playerInventoryColumns || 5;
+            const rowCount = Math.max(1, Math.ceil(this.totalSlots / columns));
+            let visibleRows = 1;
+
+            if (usedSlots === 0) {
+                visibleRows = 1;
+            } else {
+                const occupiedSlots = Object.keys(this.playerInventory)
+                    .map((slot) => Number(slot))
+                    .filter((slot) => !Number.isNaN(slot) && slot > 0)
+                    .sort((a, b) => a - b);
+
+                const highestOccupiedSlot = occupiedSlots[occupiedSlots.length - 1] || 0;
+                const lastFilledRow = Math.ceil(highestOccupiedSlot / columns);
+                visibleRows = lastFilledRow;
+
+                if (occupiedSlots.length > 0) {
+                    const currentRowStart = (visibleRows - 1) * columns + 1;
+                    const currentRowEnd = visibleRows * columns;
+                    const rowHasGaps = occupiedSlots.some((slot) => slot >= currentRowStart && slot <= currentRowEnd && !this.playerInventory[slot]);
+                    const rowFullyUsed = !rowHasGaps && occupiedSlots.every((slot) => slot <= currentRowEnd);
+                    const hasLaterRowUsed = occupiedSlots.some((slot) => slot > currentRowEnd);
+
+                    if (rowFullyUsed && !hasLaterRowUsed && occupiedSlots.length >= visibleRows * columns) {
+                        visibleRows = Math.min(rowCount, visibleRows + 1);
+                    }
+                }
+            }
+
+            this.visiblePlayerSlots = Math.min(this.totalSlots, visibleRows * columns);
         },
         findNextAvailableSlot(inventory) {
             for (let slot = 1; slot <= this.totalSlots; slot++) {

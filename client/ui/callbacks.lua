@@ -130,6 +130,13 @@ RegisterNUICallback('SetInventoryData', function(data, cb)
     cb('ok')
 end)
 
+--- NUI callback to compact the player's inventory slots
+RegisterNUICallback('SortInventory', function(data, cb)
+    if not validateToken(data and data.token) then cb('ok') return end
+    TriggerServerEvent('rsg-inventory:server:sortInventory')
+    cb('ok')
+end)
+
 --- NUI callback to give an item to another player
 RegisterNUICallback('GiveItem', function(data, cb)
     if not validateToken(data and data.token) then cb(false) return end

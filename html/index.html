@@ -23,6 +23,7 @@
         <div id="app">
             <div class="inventory-container" v-if="isInventoryOpen" @mousemove="drag" @mouseup="endDrag" @mousedown="containerMouseDownAction">
                 <div class="player-inventory-bg" :class="{ 'centered-player-inventory-bg': shouldCenterInventory }"></div>
+                <button class="sort-btn player-sort-btn" :class="{ 'centered-sort-btn': shouldCenterInventory }" @click="sortInventory" :disabled="busy || isTradeActive">{{ t.sort }}</button>
                 <div class="close-btn player-close-btn" :class="{ 'centered-close-btn': shouldCenterInventory }" @click="closeInventory" role="button" :aria-label="t.close_aria">{{ t.close }}</div>
                 <div class="player-inventory-header" :class="{ 'centered-inventory-header': shouldCenterInventory }">
                     <div class="labels-container">
@@ -44,9 +45,9 @@
                     </div>
                 </div>
                 <div class="divider"></div>
-                <div class="player-inventory" :class="{ 'centered-player-inventory': shouldCenterInventory }">
+                <div class="player-inventory" :class="{ 'centered-player-inventory': shouldCenterInventory }" :style="{ '--visible-rows': playerInventoryVisibleRows }">
                     <div class="item-grid">
-                        <div v-for="slot in totalSlots" :key="slot" class="item-slot" :data-slot="slot" :class="{ 'invalid-slot-highlight': errorSlot === slot }" @dblclick="getItemInSlot(slot, 'player') && useItem(getItemInSlot(slot, 'player'))" @mousedown="event => handleMouseDown(event, slot, 'player')">
+                        <div v-for="slot in visiblePlayerSlots" :key="slot" class="item-slot" :data-slot="slot" :class="{ 'invalid-slot-highlight': errorSlot === slot }" @dblclick="getItemInSlot(slot, 'player') && useItem(getItemInSlot(slot, 'player'))" @mousedown="event => handleMouseDown(event, slot, 'player')">
                             <!-- <div class="item-slot-key" v-if="slot <= 5">
                                 <p>{{ slot }}</p>
                             </div> -->

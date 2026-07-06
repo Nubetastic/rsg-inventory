@@ -1,6 +1,13 @@
 local RSGCore = exports['rsg-core']:GetCoreObject()
 Inventory = Inventory or {}
 local config = require 'shared.config'
+
+local function getEffectivePlayerSlots(playerData)
+    local baseSlots = tonumber(playerData and playerData.slots) or config.StashSize.slots
+    local maxSlots = tonumber((config.PlayerInventory and config.PlayerInventory.maxSlots) or config.StashSize.slots)
+    return math.max(baseSlots, maxSlots)
+end
+
 Inventory.LoadInventory = function(source, citizenid)
     local inventory = MySQL.prepare.await('SELECT inventory FROM players WHERE citizenid = ?', { citizenid })
     inventory = json.decode(inventory)
@@ -240,7 +247,7 @@ Inventory.GetSlots = function(identifier)
     local player = RSGCore.Functions.GetPlayer(identifier)
     if player then
         inventory = player.PlayerData.items
-        maxSlots = player.PlayerData.slots
+        maxSlots = getEffectivePlayerSlots(player.PlayerData)
     elseif Inventories[identifier] then
         inventory = Inventories[identifier].items
         maxSlots = Inventories[identifier].slots
@@ -312,8 +319,9 @@ Inventory.CanAddItem = function(source, item, amount)
                 slotsUsed = slotsUsed + 1
             end
         end
-        
-        if slotsUsed >= Player.PlayerData.slots then
+
+        local effectiveSlots = getEffectivePlayerSlots(Player.PlayerData)
+        if slotsUsed >= effectiveSlots then
             return false, 'slots'
         end
 
@@ -633,7 +641,7 @@ Inventory.AddItem = function(identifier, item, amount, slot, info, reason)
     if player then
         inventory = player.PlayerData.items
         inventoryWeight = player.PlayerData.weight
-        inventorySlots = player.PlayerData.slots
+        inventorySlots = getEffectivePlayerSlots(player.PlayerData)
     elseif Inventories[identifier] then
         local decayRate = Helpers.ParseDecayRate(identifier)
         inventory = Inventories[identifier].items

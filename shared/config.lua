@@ -8,6 +8,12 @@ return {
         slots = 100          -- Number of item slots
     },
 
+    -- Configuration for player inventory slot growth
+    PlayerInventory = {
+        maxSlots = 1000, -- Large effective slot ceiling so carry weight stays the main limiter
+        columns = 5      -- Number of columns per inventory row
+    },
+
     -- Configuration for dropped items on the ground
     DropSize = {
         maxweight = 1000000, -- Max weight for dropped items

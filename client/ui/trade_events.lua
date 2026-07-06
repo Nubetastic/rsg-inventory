@@ -40,13 +40,16 @@ RegisterNetEvent('rsg-inventory:client:openTrade', function(tradeId, partnerId, 
 
     local myId = Player.source or Player.id or Player.citizenid
 
+    local playerSlots = tonumber(Player.slots) or 0
+    local effectiveSlots = math.max(playerSlots, tonumber(config.PlayerInventory and config.PlayerInventory.maxSlots) or 0)
+
     SendNUIMessage({
         action = 'openTrade',
         tradeId = tradeId,
         partnerId = partnerId,
         partnerName = partnerName,
         inventory = items or Player.items,
-        slots = Player.slots,
+        slots = effectiveSlots,
         maxweight = Player.weight,
         playerId = myId,
         playerName = (Player.charinfo and Player.charinfo.firstname)

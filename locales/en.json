@@ -82,6 +82,7 @@
     "weight": "Weight",
     "id": "ID",
     "cash": "Cash",
+    "sort": "Sort",
     "received": "Received",
     "used": "Used",
     "removed": "Removed",

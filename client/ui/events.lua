@@ -117,6 +117,7 @@ function buildLabels()
         weight  = L('ui.weight', 'Weight'),
         id      = L('ui.id', 'ID'),
         cash    = L('ui.cash', 'Cash'),
+        sort    = L('ui.sort', 'Sort'),
         received = L('ui.received', 'Received'),
         used     = L('ui.used', 'Used'),
         removed  = L('ui.removed', 'Removed'),
@@ -143,10 +144,13 @@ RegisterNetEvent('rsg-inventory:client:openInventory', function(items, other)
     local labels = buildLabels()
     SetNuiFocus(true, true) -- focus mouse and keyboard on NUI
 
+    local playerSlots = tonumber(Player.slots) or 0
+    local effectiveSlots = math.max(playerSlots, tonumber(config.PlayerInventory and config.PlayerInventory.maxSlots) or 0)
+
     SendNUIMessage({
         action    = 'open',
         inventory = items,
-        slots     = Player.slots,
+        slots     = effectiveSlots,
         maxweight = Player.weight,
         playerId  = Player.source or Player.id or Player.citizenid,
         playerName = (Player.charinfo and Player.charinfo.firstname)

@@ -103,7 +103,8 @@ lib.addCommand(config.CommandNames.RandomItems, {
 
         -- Find an empty slot
         local emptySlot
-        for i = 1, player.PlayerData.slots do
+        local effectiveSlots = math.max(tonumber(player.PlayerData.slots) or 0, tonumber(config.PlayerInventory and config.PlayerInventory.maxSlots) or 0)
+        for i = 1, effectiveSlots do
             if not playerInventory[i] then
                 emptySlot = i
                 break

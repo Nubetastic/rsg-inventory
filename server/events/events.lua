@@ -343,6 +343,76 @@ RegisterNetEvent('rsg-inventory:server:SetInventoryData', function(fromInventory
         end
     end
 end)
+
+local sortInventoryCooldowns = {}
+
+RegisterNetEvent('rsg-inventory:server:sortInventory', function()
+    local src = source
+    local now = GetGameTimer()
+    if sortInventoryCooldowns[src] and now - sortInventoryCooldowns[src] < 1000 then return end
+    sortInventoryCooldowns[src] = now
+
+    local Player = RSGCore.Functions.GetPlayer(src)
+    if not Player then return end
+
+    Inventory.CheckPlayerItemsDecay(Player)
+
+    local items = Player.PlayerData.items or {}
+    local slotOneItem
+    local occupiedSlots = {}
+
+    for key, item in pairs(items) do
+        if item then
+            local slot = tonumber(item.slot) or tonumber(key)
+            if slot then
+                if slot == 1 then
+                    slotOneItem = item
+                elseif slot > 1 then
+                    occupiedSlots[#occupiedSlots + 1] = {
+                        slot = slot,
+                        item = item
+                    }
+                end
+            end
+        end
+    end
+
+    table.sort(occupiedSlots, function(a, b)
+        return a.slot < b.slot
+    end)
+
+    local sortedItems = {}
+    if slotOneItem then
+        slotOneItem.slot = 1
+        sortedItems[1] = slotOneItem
+    end
+
+    local nextSlot = 2
+    local changed = false
+    for _, entry in ipairs(occupiedSlots) do
+        if entry.slot ~= nextSlot then
+            changed = true
+        end
+
+        entry.item.slot = nextSlot
+        sortedItems[nextSlot] = entry.item
+        nextSlot = nextSlot + 1
+    end
+
+    if not changed then return end
+
+    Player.Functions.SetPlayerData('items', sortedItems)
+    TriggerClientEvent('rsg-inventory:client:updateInventory', src)
+
+    local hotbarItems = {}
+    for slot = 1, 5 do
+        hotbarItems[slot] = Player.Functions.GetItemBySlot(slot)
+    end
+    TriggerClientEvent('rsg-inventory:client:updateHotbar', src, hotbarItems)
+
+    TriggerEvent('rsg-log:server:CreateLog', 'playerinventory', 'Inventory Sorted', 'blue',
+        ('**%s (citizenid: %s | id: %s)** sorted inventory slots'):format(GetPlayerName(src), Player.PlayerData.citizenid, src))
+end)
 RegisterNetEvent('rsg-inventory:server:openPlayerInventory', function(targetId)
     local src = source
     local Player = RSGCore.Functions.GetPlayer(src)
