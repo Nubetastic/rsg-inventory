@@ -72,3 +72,5 @@ return {
 - [**The Icon Library Project**](https://github.com/TankieTwitch/FREE-RedM-Image-Library) 🖼 — free RedM item icons
 
 ---
+Modified from https://github.com/Rexshack-RedM/rsg-inventory, Nov 2025.
+See the Git history for changes. Distributed under GNU GPLv3.
