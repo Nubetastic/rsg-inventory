@@ -75,7 +75,7 @@ div {
     overflow-y: auto;
     transform: translate(-50%, 0);
     z-index: 1;
-    max-height: calc(100vh - calc(19.4vh + 2.2vh + 2.2vh + 0.5vh + var(--divider-h) + var(--grid-pt)) - 2vh);  
+    max-height: calc(58.5vh - 4.2vh - 2.0vh - 4.0vh - 2.2vh - 2.2vh - 0.5vh - var(--divider-h) - var(--grid-pt));
 }
 
 
@@ -249,7 +249,6 @@ div {
     top: calc(19.4vh + 2.2vh + 2.2vh + 0.5vh + var(--divider-h) + var(--grid-pt)); 
     left: 50vw;
     transform: translate(-50%, 0);
-    max-height: calc(100vh - calc(19.4vh + 2.2vh + 2.2vh + 0.5vh + var(--divider-h) + var(--grid-pt)) - 2vh);  
 }
 
 .centered-inventory-header {
